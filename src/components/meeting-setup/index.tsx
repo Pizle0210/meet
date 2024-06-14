@@ -1,31 +1,64 @@
-import React from "react";
+"use client";
 
-export default function MeetingSetup() {
-  const name = "mariam";
+import {
+  DeviceSettings,
+  useCall,
+  VideoPreview,
+} from "@stream-io/video-react-sdk";
+import React, { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+
+export default function MeetingSetup({
+  setIsSetupComplete,
+}: {
+  setIsSetupComplete: (value:boolean) => void;
+}) {
+  const [isMicCamOn, setIsMicCamOn] = useState(false);
+
+  const call = useCall();
+
+  useEffect(() => {
+    if (!isMicCamOn) {
+      call?.camera.enable();
+      call?.microphone.enable();
+    } else {
+      call?.microphone.disable();
+      call?.camera.disable();
+    }
+  }, [isMicCamOn, call?.camera, call?.microphone]);
+
   return (
-    <>
-      MEETING SETUP Lorem ipsum dolor sit amet consectetur adipisicing elit.
-      Repellat, illo assumenda facere quia saepe, quos quae modi perferendis
-      doloribus odit porro! Sunt nesciunt architecto reprehenderit, voluptatem
-      quis itaque vero ipsam dolorem eligendi, laboriosam cumque officia animi
-      sequi sed assumenda quia commodi! Sunt alias laboriosam adipisci explicabo
-      iure possimus fugiat ipsam, eius saepe veniam dolore id tenetur natus
-      blanditiis, omnis excepturi eveniet mollitia quae? Quam laudantium error
-      impedit accusamus ipsa, nostrum harum, magnam aperiam quod voluptas nihil
-      reprehenderit nam voluptatum assumenda aliquam eum alias nemo quae esse,
-      praesentium fuga quaerat velit. Nulla, repellat minima, esse perspiciatis
-      ipsam reprehenderit delectus quia sunt in blanditiis ex modi veniam
-      voluptates odit quibusdam praesentium, qui similique ipsa reiciendis
-      numquam pariatur doloribus ratione. Modi magni nisi cum, aut quam quis
-      itaque fuga animi dolor! Aliquid doloremque blanditiis porro, culpa
-      reprehenderit soluta enim ipsum? Nulla quo, harum ipsum sint sapiente
-      voluptatem nisi voluptatibus quibusdam possimus quasi cupiditate beatae,
-      velit consectetur, atque qui provident voluptatum nesciunt maxime a nihil
-      officia pariatur veniam! Atque in excepturi id quis culpa quaerat quas qui
-      esse doloremque nemo facere, quasi reprehenderit, molestiae
-      necessitatibus? Qui similique exercitationem voluptates itaque excepturi.
-      Quaerat facilis delectus ex architecto sapiente eum odio illo cum, ad quos
-      ducimus.
-    </>
+    <div className="flex h-screen w-full flex-col place-content-center items-center gap-5 rounded-lg text-white">
+      <h1 className="text-[clamp(1.3rem,3vw,4rem)] font-bold">Setup</h1>
+      <VideoPreview />
+      <div className="flex h-20 items-center justify-center gap-4">
+        <label className="flex items-center gap-2 font-medium">
+          <input
+            type="checkbox"
+            className="size-5 rounded-md checked:text-orange-500"
+            checked={isMicCamOn}
+            onChange={(e) => setIsMicCamOn(e.target.checked)}
+          />
+          {isMicCamOn ? (
+            <p className="text-xl font-semibold">Join with mic and camera on</p>
+          ) : (
+            <p className="text-xl font-semibold">
+              Join with mic and camera off
+            </p>
+          )}
+        </label>
+
+        <DeviceSettings />
+      </div>
+      <Button
+        className="rounded-lg bg-orange-500 px-5 py-3 text-lg hover:bg-orange-400"
+        onClick={() => {
+          call?.join();
+          setIsSetupComplete(true)
+        }}
+      >
+        Join Meeting
+      </Button>
+    </div>
   );
 }

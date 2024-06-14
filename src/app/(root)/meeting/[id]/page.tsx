@@ -12,7 +12,7 @@ export default function Meeting({
 }: {
   params: { id: string };
 }) {
-  const [isSetupComplete, setIsSetuoComplete] = useState(false);
+  const [isSetupComplete, setIsSetupComplete] = useState(false);
   const { user, isLoaded } = useUser();
   const { call, isCallLoading } = useGetCallById(id);
 
@@ -21,7 +21,11 @@ export default function Meeting({
     <main className="h-screen w-full">
       <StreamCall call={call}>
         <StreamTheme>
-          {!isSetupComplete ? <MeetingSetup /> : <MeetingRoom />}
+          {!isSetupComplete ? (
+            <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+          ) : (
+            <MeetingRoom />
+          )}
         </StreamTheme>
       </StreamCall>
     </main>
